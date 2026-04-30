@@ -15,8 +15,24 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path , include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('accounts/', include('accounts.urls')), # /accounts/login etc
+    path('', include('parking.urls')),          # / dashboard
+    path('api/', include('api.urls')),          # /api/detect etc
 ]
+
+
+from django.core.asgi import get_asgi_application
+from channels.routing import ProtocolTypeRouter, URLRouter
+from channels.auth import AuthMiddlewareStack
+from parking.consumers import ParkingConsumer
+
+application = ProtocolTypeRouter({
+    'http': get_asgi_application(),
+    'websocket': AuthMiddlewareStack(URLRouter([
+        path('ws/parking/', ParkingConsumer.as_asgi()),
+    ]))
+})
