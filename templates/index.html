@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Smart Parking AI — Smart Parking Made Simple</title>
+  <meta name="description" content="Reserve your parking space in advance and access it instantly with AI-powered license plate verification." />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Inter', system-ui, sans-serif; color: #111827; }
+    .hero-bg {
+      background:
+        linear-gradient(135deg, rgba(29, 78, 216, 0.92) 0%, rgba(16, 185, 129, 0.85) 100%),
+        url('https://images.unsplash.com/photo-1506521781263-d8422e82f27a?auto=format&fit=crop&w=1600&q=80') center/cover no-repeat;
+    }
+    .grid-pattern {
+      background-image:
+        linear-gradient(rgba(29,78,216,0.06) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(29,78,216,0.06) 1px, transparent 1px);
+      background-size: 40px 40px;
+    }
+  </style>
+</head>
+<body class="bg-white text-gray-900 antialiased">
+
+  <!-- Navbar -->
+  <header class="fixed top-0 inset-x-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-100">
+    <nav class="max-w-7xl mx-auto px-6 lg:px-8 h-16 flex items-center justify-between">
+      <a href="#" class="flex items-center gap-2">
+        <span class="w-9 h-9 rounded-xl bg-blue-700 text-white flex items-center justify-center font-bold shadow-lg shadow-blue-200">P</span>
+        <span class="font-bold text-lg tracking-tight">Smart Parking <span class="text-blue-700">AI</span></span>
+      </a>
+      <ul class="hidden md:flex items-center gap-8 text-sm font-medium text-gray-600">
+        <li><a href="#home" class="hover:text-blue-700 transition">Home</a></li>
+        <li><a href="#features" class="hover:text-blue-700 transition">Features</a></li>
+        <li><a href="#how" class="hover:text-blue-700 transition">How It Works</a></li>
+        <li><a href="#contact" class="hover:text-blue-700 transition">Contact</a></li>
+      </ul>
+      <div class="flex items-center gap-3">
+        <a href="#" class="hidden sm:inline-block px-4 py-2 text-sm font-medium text-gray-700 hover:text-blue-700 transition">Login</a>
+        <a href="#" class="px-5 py-2 text-sm font-semibold text-white bg-blue-700 rounded-xl hover:bg-blue-800 shadow-lg shadow-blue-200 transition">Register</a>
+      </div>
+    </nav>
+  </header>
+
+  <!-- Hero -->
+  <section id="home" class="hero-bg pt-32 pb-24 md:pt-40 md:pb-32">
+    <div class="max-w-7xl mx-auto px-6 lg:px-8 text-center text-white">
+      <span class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/15 backdrop-blur border border-white/20 text-xs font-medium mb-6">
+        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+        AI-Powered Smart City Solution
+      </span>
+      <h1 class="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight leading-tight max-w-4xl mx-auto">
+        Smart Parking <span class="text-emerald-300">Made Simple</span>
+      </h1>
+      <p class="mt-6 text-lg md:text-xl text-white/90 max-w-2xl mx-auto leading-relaxed">
+        Reserve your parking space in advance and access it instantly with AI-powered license plate verification.
+      </p>
+      <div class="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
+        <a href="#" class="px-8 py-3.5 rounded-xl bg-white text-blue-700 font-semibold shadow-lg hover:shadow-2xl hover:-translate-y-0.5 transition">Reserve a Spot</a>
+        <a href="#how" class="px-8 py-3.5 rounded-xl bg-white/10 border border-white/30 text-white font-semibold backdrop-blur hover:bg-white/20 transition">Learn More</a>
+      </div>
+      <div class="mt-16 grid grid-cols-3 gap-4 max-w-2xl mx-auto">
+        <div class="bg-white/10 backdrop-blur border border-white/20 rounded-2xl p-4">
+          <div class="text-2xl font-bold">99.8%</div>
+          <div class="text-xs text-white/80">Plate Accuracy</div>
+        </div>
+        <div class="bg-white/10 backdrop-blur border border-white/20 rounded-2xl p-4">
+          <div class="text-2xl font-bold">&lt; 2s</div>
+          <div class="text-xs text-white/80">Entry Time</div>
+        </div>
+        <div class="bg-white/10 backdrop-blur border border-white/20 rounded-2xl p-4">
+          <div class="text-2xl font-bold">24/7</div>
+          <div class="text-xs text-white/80">Availability</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features -->
+  <section id="features" class="py-24 bg-white">
+    <div class="max-w-7xl mx-auto px-6 lg:px-8">
+      <div class="text-center max-w-2xl mx-auto mb-16">
+        <span class="text-sm font-semibold text-blue-700 uppercase tracking-wider">Features</span>
+        <h2 class="mt-3 text-3xl md:text-4xl font-bold tracking-tight">Everything you need to park smarter</h2>
+        <p class="mt-4 text-gray-600">Powerful tools built on top of modern AI to make parking effortless.</p>
+      </div>
+      <div class="grid md:grid-cols-3 gap-8">
+        <div class="group bg-gray-50 hover:bg-white border border-gray-100 rounded-2xl p-8 hover:shadow-xl hover:-translate-y-1 transition">
+          <div class="w-14 h-14 rounded-2xl bg-blue-100 flex items-center justify-center text-3xl mb-6 group-hover:bg-blue-700 group-hover:scale-110 transition">🚗</div>
+          <h3 class="text-xl font-bold mb-3">Parking Reservation</h3>
+          <p class="text-gray-600 leading-relaxed">Reserve your spot quickly and avoid wasting time searching for parking in busy areas.</p>
+        </div>
+        <div class="group bg-gray-50 hover:bg-white border border-gray-100 rounded-2xl p-8 hover:shadow-xl hover:-translate-y-1 transition">
+          <div class="w-14 h-14 rounded-2xl bg-emerald-100 flex items-center justify-center text-3xl mb-6 group-hover:bg-emerald-500 group-hover:scale-110 transition">🤖</div>
+          <h3 class="text-xl font-bold mb-3">AI Plate Recognition</h3>
+          <p class="text-gray-600 leading-relaxed">Automatic license plate detection powered by deep learning for fast, accurate identification.</p>
+        </div>
+        <div class="group bg-gray-50 hover:bg-white border border-gray-100 rounded-2xl p-8 hover:shadow-xl hover:-translate-y-1 transition">
+          <div class="w-14 h-14 rounded-2xl bg-yellow-100 flex items-center justify-center text-3xl mb-6 group-hover:bg-yellow-400 group-hover:scale-110 transition">⚡</div>
+          <h3 class="text-xl font-bold mb-3">Instant Access</h3>
+          <p class="text-gray-600 leading-relaxed">Fast and secure entry without human interaction — barriers open the moment you arrive.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- How It Works -->
+  <section id="how" class="py-24 bg-gray-50 grid-pattern">
+    <div class="max-w-7xl mx-auto px-6 lg:px-8">
+      <div class="text-center max-w-2xl mx-auto mb-16">
+        <span class="text-sm font-semibold text-blue-700 uppercase tracking-wider">How It Works</span>
+        <h2 class="mt-3 text-3xl md:text-4xl font-bold tracking-tight">From signup to parked in 4 steps</h2>
+      </div>
+      <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="bg-white rounded-2xl p-8 shadow-sm hover:shadow-lg transition relative">
+          <div class="absolute -top-4 left-8 w-10 h-10 rounded-xl bg-blue-700 text-white font-bold flex items-center justify-center shadow-lg">1</div>
+          <div class="text-3xl mb-3 mt-2">👤</div>
+          <h3 class="font-bold mb-2">Create Account</h3>
+          <p class="text-sm text-gray-600">Sign up and add your vehicle details to get started.</p>
+        </div>
+        <div class="bg-white rounded-2xl p-8 shadow-sm hover:shadow-lg transition relative">
+          <div class="absolute -top-4 left-8 w-10 h-10 rounded-xl bg-blue-700 text-white font-bold flex items-center justify-center shadow-lg">2</div>
+          <div class="text-3xl mb-3 mt-2">📍</div>
+          <h3 class="font-bold mb-2">Reserve a Space</h3>
+          <p class="text-sm text-gray-600">Pick your preferred parking lot and secure a spot in advance.</p>
+        </div>
+        <div class="bg-white rounded-2xl p-8 shadow-sm hover:shadow-lg transition relative">
+          <div class="absolute -top-4 left-8 w-10 h-10 rounded-xl bg-blue-700 text-white font-bold flex items-center justify-center shadow-lg">3</div>
+          <div class="text-3xl mb-3 mt-2">📸</div>
+          <h3 class="font-bold mb-2">Scan Your Plate</h3>
+          <p class="text-sm text-gray-600">Upload or let our AI camera scan your vehicle's license plate.</p>
+        </div>
+        <div class="bg-white rounded-2xl p-8 shadow-sm hover:shadow-lg transition relative">
+          <div class="absolute -top-4 left-8 w-10 h-10 rounded-xl bg-emerald-500 text-white font-bold flex items-center justify-center shadow-lg">4</div>
+          <div class="text-3xl mb-3 mt-2">✅</div>
+          <h3 class="font-bold mb-2">Instant Access</h3>
+          <p class="text-sm text-gray-600">Verified instantly — drive in without stopping or queues.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Statistics -->
+  <section class="py-20 bg-white">
+    <div class="max-w-7xl mx-auto px-6 lg:px-8">
+      <div class="grid sm:grid-cols-3 gap-6">
+        <div class="bg-gradient-to-br from-blue-700 to-blue-800 text-white rounded-2xl p-10 text-center shadow-xl shadow-blue-200 hover:-translate-y-1 transition">
+          <div class="text-5xl font-extrabold">100<span class="text-emerald-300">+</span></div>
+          <div class="mt-2 text-blue-100 font-medium">Parking Spots</div>
+        </div>
+        <div class="bg-gray-900 text-white rounded-2xl p-10 text-center shadow-xl hover:-translate-y-1 transition">
+          <div class="text-5xl font-extrabold">500<span class="text-emerald-400">+</span></div>
+          <div class="mt-2 text-gray-300 font-medium">Active Users</div>
+        </div>
+        <div class="bg-gradient-to-br from-emerald-500 to-emerald-600 text-white rounded-2xl p-10 text-center shadow-xl shadow-emerald-200 hover:-translate-y-1 transition">
+          <div class="text-5xl font-extrabold">1000<span class="text-yellow-300">+</span></div>
+          <div class="mt-2 text-emerald-50 font-medium">Reservations</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="py-24 bg-gray-50">
+    <div class="max-w-5xl mx-auto px-6 lg:px-8">
+      <div class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-blue-700 via-blue-800 to-emerald-600 p-12 md:p-16 text-center text-white shadow-2xl">
+        <div class="absolute inset-0 opacity-20" style="background-image: radial-gradient(circle at 20% 20%, white 1px, transparent 1px), radial-gradient(circle at 80% 70%, white 1px, transparent 1px); background-size: 60px 60px;"></div>
+        <div class="relative">
+          <h2 class="text-3xl md:text-4xl font-bold tracking-tight">Start using Smart Parking today<br/>and save time every day.</h2>
+          <p class="mt-4 text-white/85 max-w-xl mx-auto">Join hundreds of drivers who already park smarter with AI.</p>
+          <div class="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
+            <a href="#" class="px-8 py-3.5 rounded-xl bg-white text-blue-700 font-semibold shadow-lg hover:shadow-2xl hover:-translate-y-0.5 transition">Get Started</a>
+            <a href="#" class="px-8 py-3.5 rounded-xl bg-white/10 border border-white/30 text-white font-semibold backdrop-blur hover:bg-white/20 transition">Sign Up</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer id="contact" class="bg-gray-900 text-gray-400 py-12">
+    <div class="max-w-7xl mx-auto px-6 lg:px-8">
+      <div class="flex flex-col md:flex-row items-center justify-between gap-6">
+        <div class="flex items-center gap-2">
+          <span class="w-9 h-9 rounded-xl bg-blue-700 text-white flex items-center justify-center font-bold">P</span>
+          <span class="font-bold text-white text-lg">Smart Parking AI</span>
+        </div>
+        <ul class="flex items-center gap-8 text-sm">
+          <li><a href="#home" class="hover:text-white transition">Home</a></li>
+          <li><a href="#features" class="hover:text-white transition">Features</a></li>
+          <li><a href="#contact" class="hover:text-white transition">Contact</a></li>
+        </ul>
+        <p class="text-sm">© 2026 Smart Parking AI. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>
