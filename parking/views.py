@@ -5,16 +5,68 @@ from django.views.decorators.http import require_POST
 from .models import PlaceParking, Reservation
 from .forms import ReservationForm
 from accounts.models import Vehicule
+from accounts.forms import VehiculeForm
+from django.utils import timezone
+from datetime import date
 
-@login_required            
+@login_required
 def dashboard(request):
+    if request.method == 'POST' and request.POST.get('action') == 'add_vehicle':
+        vehicle_form = VehiculeForm(request.POST)
+        if vehicle_form.is_valid():
+            vehicle = vehicle_form.save(commit=False)
+            vehicle.proprietaire = request.user
+            vehicle.save()
+            messages.success(request, "Véhicule ajouté avec succès.")
+            return redirect('parking:dashboard')
+        messages.error(request, "Impossible d'ajouter le véhicule. Vérifiez le formulaire.")
+    else:
+        vehicle_form = VehiculeForm()
+
+    now = timezone.now()
     places = PlaceParking.objects.all().order_by('numero')
-    reservations = Reservation.objects.filter(
-        utilisateur=request.user, statut='en_attente'
-    ).order_by('heure_debut')
+    free_spots = places.filter(statut=PlaceParking.Statut.LIBRE).count()
+    taken_spots = places.filter(statut=PlaceParking.Statut.OCCUPEE).count()
+    total_spots = places.count()
+    occupancy_percent = int((taken_spots / total_spots) * 100) if total_spots else 0
+
+    active_reservation = Reservation.objects.filter(
+        utilisateur=request.user,
+        statut=Reservation.Statut.ACTIVE
+    ).select_related('place', 'vehicule').order_by('heure_fin').first()
+
+    upcoming_reservations = Reservation.objects.filter(
+        utilisateur=request.user,
+        statut=Reservation.Statut.EN_ATTENTE,
+        heure_fin__gte=now
+    ).select_related('place', 'vehicule').order_by('heure_debut')[:5]
+
+    history_qs = Reservation.objects.filter(
+        utilisateur=request.user,
+        statut__in=[Reservation.Statut.TERMINEE, Reservation.Statut.ANNULEE, Reservation.Statut.EXPIREE]
+    ).select_related('place').order_by('-heure_fin')[:5]
+
+    history = [
+        {
+            'date': item.heure_debut,
+            'spot': item.place.numero,
+            'duration': f"{item.get_duree_prevue_minutes()} min",
+            'status': item.get_statut_display(),
+        }
+        for item in history_qs
+    ]
+
+    vehicles = Vehicule.objects.filter(proprietaire=request.user).order_by('-id')
+
     return render(request, 'parking/dashboard.html', {
-        'places': places,
-        'reservations': reservations,
+        'active_reservation': active_reservation,
+        'upcoming_reservations': upcoming_reservations,
+        'free_spots': free_spots,
+        'taken_spots': taken_spots,
+        'occupancy_percent': occupancy_percent,
+        'history': history,
+        'vehicles': vehicles,
+        'vehicle_form': vehicle_form,
     })
 
 @login_required
@@ -54,11 +106,41 @@ def annuler_reservation(request, pk):
 
 @login_required
 def mes_reservations(request):
-    reservations = Reservation.objects.filter(
+    reservations_qs = Reservation.objects.filter(
         utilisateur=request.user
     ).select_related('place', 'vehicule').order_by('-created_at')
 
-    return render(request, 'parking/mes_reservations.html', {'reservations': reservations})
+    status = request.GET.get('status', '').strip()
+    selected_date = request.GET.get('date', '').strip()
+
+    status_map = {
+        'active': Reservation.Statut.ACTIVE,
+        'upcoming': Reservation.Statut.EN_ATTENTE,
+        'cancelled': Reservation.Statut.ANNULEE,
+    }
+    if status in status_map:
+        reservations_qs = reservations_qs.filter(statut=status_map[status])
+
+    parsed_date = None
+    if selected_date:
+        try:
+            parsed_date = date.fromisoformat(selected_date)
+            reservations_qs = reservations_qs.filter(heure_debut__date=parsed_date)
+        except ValueError:
+            messages.error(request, "Date invalide. Utilisez le format YYYY-MM-DD.")
+
+    reservations = list(reservations_qs)
+    has_filters = bool(status or selected_date)
+    no_results = has_filters and len(reservations) == 0
+    if no_results:
+        messages.error(request, "Aucune réservation ne correspond aux critères de filtre.")
+
+    return render(request, 'parking/mes_reservations.html', {
+        'reservations': reservations,
+        'selected_status': status,
+        'selected_date': selected_date,
+        'no_results': no_results,
+    })
 
 
 @login_required

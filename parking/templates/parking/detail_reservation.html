@@ -1,0 +1,54 @@
+{% extends "base_dashboard.html" %}
+{% block title %}Détail réservation — Smart Parking AI{% endblock %}
+
+{% block content %}
+<div class="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+  <div>
+    <h1 class="text-2xl lg:text-3xl font-bold text-slate-900">Détail de la réservation</h1>
+    <p class="text-slate-500 mt-1">Informations complètes de votre réservation.</p>
+  </div>
+  <a href="{% url 'parking:mes_reservations' %}" class="inline-flex items-center justify-center px-4 py-2.5 rounded-lg border border-slate-200 hover:bg-slate-50 text-sm font-medium">
+    Retour
+  </a>
+</div>
+
+<div class="card max-w-3xl">
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+    <div class="rounded-lg bg-slate-50 px-4 py-3">
+      <p class="text-slate-500">Réservation</p>
+      <p class="font-semibold text-slate-900 mt-1">#{{ reservation.pk }}</p>
+    </div>
+    <div class="rounded-lg bg-slate-50 px-4 py-3">
+      <p class="text-slate-500">Statut</p>
+      <p class="font-semibold text-slate-900 mt-1">{{ reservation.get_statut_display }}</p>
+    </div>
+    <div class="rounded-lg bg-slate-50 px-4 py-3">
+      <p class="text-slate-500">Place</p>
+      <p class="font-semibold text-slate-900 mt-1">Place {{ reservation.place.numero }}</p>
+    </div>
+    <div class="rounded-lg bg-slate-50 px-4 py-3">
+      <p class="text-slate-500">Véhicule</p>
+      <p class="font-semibold text-slate-900 mt-1">{{ reservation.vehicule.plaque }}</p>
+    </div>
+    <div class="rounded-lg bg-slate-50 px-4 py-3">
+      <p class="text-slate-500">Début</p>
+      <p class="font-semibold text-slate-900 mt-1">{{ reservation.heure_debut|date:"d/m/Y H:i" }}</p>
+    </div>
+    <div class="rounded-lg bg-slate-50 px-4 py-3">
+      <p class="text-slate-500">Fin</p>
+      <p class="font-semibold text-slate-900 mt-1">{{ reservation.heure_fin|date:"d/m/Y H:i" }}</p>
+    </div>
+  </div>
+
+  {% if reservation.statut == 'en_attente' or reservation.statut == 'active' %}
+    <div class="mt-6 flex justify-end">
+      <form method="post" action="{% url 'parking:annuler_reservation' reservation.pk %}" onsubmit="return confirm('Annuler cette réservation ?');">
+        {% csrf_token %}
+        <button type="submit" class="px-4 py-2 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 text-sm font-medium">
+          Annuler la réservation
+        </button>
+      </form>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

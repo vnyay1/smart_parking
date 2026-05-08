@@ -37,6 +37,12 @@ class VehiculeForm(forms.ModelForm):
             'modele':  'Modèle',
             'couleur': 'Couleur',
         }
+        widgets = {
+            'plaque': forms.TextInput(attrs={'class': 'w-full px-3 py-2 rounded-lg border border-slate-200 focus:ring-2 focus:ring-brand-blue/30 focus:border-brand-blue outline-none font-mono', 'placeholder': '12345-A-6'}),
+            'marque': forms.TextInput(attrs={'class': 'w-full px-3 py-2 rounded-lg border border-slate-200 focus:ring-2 focus:ring-brand-blue/30 focus:border-brand-blue outline-none', 'placeholder': 'Ex: Renault'}),
+            'modele': forms.TextInput(attrs={'class': 'w-full px-3 py-2 rounded-lg border border-slate-200 focus:ring-2 focus:ring-brand-blue/30 focus:border-brand-blue outline-none', 'placeholder': 'Ex: Clio'}),
+            'couleur': forms.TextInput(attrs={'class': 'w-full px-3 py-2 rounded-lg border border-slate-200 focus:ring-2 focus:ring-brand-blue/30 focus:border-brand-blue outline-none', 'placeholder': 'Ex: Gris'}),
+        }
 
     def clean_plaque(self):
         plaque = self.cleaned_data['plaque'].strip().upper()

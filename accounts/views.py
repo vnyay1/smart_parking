@@ -8,7 +8,8 @@ from .models import Vehicule
 
 def inscription(request):
     if request.user.is_authenticated:
-        return redirect('parking:dashboard')  # déjà connecté → rediriger
+        logout(request)
+        messages.info(request, "Veuillez vous authentifier de nouveau pour continuer.")
 
     if request.method == 'POST':
         form = InscriptionForm(request.POST)
@@ -27,7 +28,8 @@ def inscription(request):
 
 def connexion(request):
     if request.user.is_authenticated:
-        return redirect('parking:dashboard')
+        logout(request)
+        messages.info(request, "Session précédente fermée. Veuillez vous reconnecter.")
 
     if request.method == 'POST':
         form = ConnexionForm(request, data=request.POST)

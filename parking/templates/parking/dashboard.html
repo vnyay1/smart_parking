@@ -30,24 +30,24 @@
       <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-5">
         <div>
           <p class="text-xs text-slate-500 uppercase">Place</p>
-          <p class="font-semibold text-slate-900 mt-1">{{ active_reservation.spot }}</p>
+          <p class="font-semibold text-slate-900 mt-1">Place {{ active_reservation.place.numero }}</p>
         </div>
         <div>
           <p class="text-xs text-slate-500 uppercase">Début</p>
-          <p class="font-semibold text-slate-900 mt-1">{{ active_reservation.start_time }}</p>
+          <p class="font-semibold text-slate-900 mt-1">{{ active_reservation.heure_debut|date:"d/m/Y H:i" }}</p>
         </div>
         <div>
           <p class="text-xs text-slate-500 uppercase">Fin</p>
-          <p class="font-semibold text-slate-900 mt-1">{{ active_reservation.end_time }}</p>
+          <p class="font-semibold text-slate-900 mt-1">{{ active_reservation.heure_fin|date:"d/m/Y H:i" }}</p>
         </div>
         <div>
           <p class="text-xs text-slate-500 uppercase">Statut</p>
-          <p class="font-semibold text-emerald-600 mt-1">{{ active_reservation.status }}</p>
+          <p class="font-semibold text-emerald-600 mt-1">{{ active_reservation.get_statut_display }}</p>
         </div>
       </div>
       <div class="flex gap-3">
-        <a href="#" class="px-4 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-sm font-medium">Voir</a>
-        <form method="post" action="#" onsubmit="return confirm('Annuler cette réservation ?');">
+        <a href="{% url 'parking:detail_reservation' active_reservation.pk %}" class="px-4 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-sm font-medium">Voir</a>
+        <form method="post" action="{% url 'parking:annuler_reservation' active_reservation.pk %}" onsubmit="return confirm('Annuler cette réservation ?');">
           {% csrf_token %}
           <button class="px-4 py-2 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 text-sm font-medium">Annuler</button>
         </form>
@@ -82,7 +82,7 @@
     <div class="h-2 bg-slate-100 rounded-full overflow-hidden">
       <meter min="0" max="100" value="{{ occupancy_percent|default:0 }}" class="w-full h-2 block"></meter>
     </div>
-    <a href="#" class="inline-block mt-4 text-sm font-medium text-brand-blue hover:underline">Voir le détail →</a>
+    <a href="{% url 'parking:availability' %}" class="inline-block mt-4 text-sm font-medium text-brand-blue hover:underline">Voir le détail →</a>
   </div>
 
   <!-- Prochaines réservations -->
@@ -98,15 +98,17 @@
           <li class="py-3 flex items-center justify-between gap-4">
             <div>
               <p class="font-medium text-slate-900">Place {{ r.place.numero }}</p>
-              <p class="text-xs text-slate-500">{{ r.heure_debut }} → {{ r.heure_fin }}</p>
+              <p class="text-xs text-slate-500">{{ r.heure_debut|date:"d/m/Y H:i" }} → {{ r.heure_fin|date:"d/m/Y H:i" }}</p>
             </div>
             <div class="flex items-center gap-3">
               <span class="text-xs px-2 py-1 rounded-full bg-blue-50 text-blue-700">{{ r.get_statut_display }}</span>
               <a href="{% url 'parking:detail_reservation' r.pk %}" class="text-sm text-slate-600 hover:text-slate-900">Détails</a>
-              <form method="post" action="{% url 'parking:annuler_reservation' r.pk %}" class="inline" onsubmit="return confirm('Annuler cette réservation ?');">
-                {% csrf_token %}
-                <button type="submit" class="text-sm text-red-600 hover:text-red-700">Annuler</button>
-              </form>
+              {% if r.statut == 'en_attente' or r.statut == 'active' %}
+                <form method="post" action="{% url 'parking:annuler_reservation' r.pk %}" class="inline" onsubmit="return confirm('Annuler cette réservation ?');">
+                  {% csrf_token %}
+                  <button type="submit" class="text-sm text-red-600 hover:text-red-700">Annuler</button>
+                </form>
+              {% endif %}
             </div>
           </li>
         {% endfor %}
@@ -124,21 +126,47 @@
         {% for v in vehicles %}
           <li class="flex items-center gap-3 px-3 py-2 rounded-lg bg-slate-50">
             <div class="w-9 h-9 rounded-md bg-white border border-slate-200 flex items-center justify-center font-bold text-slate-700">🚗</div>
-            <span class="font-mono font-semibold text-slate-900">{{ v.plate }}</span>
+            <span class="font-mono font-semibold text-slate-900">{{ v.plaque }}</span>
           </li>
         {% endfor %}
       </ul>
     {% else %}
       <p class="text-sm text-slate-500 mb-4">Aucune plaque enregistrée.</p>
     {% endif %}
-    <a href="#" class="inline-flex w-full justify-center px-4 py-2 rounded-lg border border-slate-200 hover:bg-slate-50 text-sm font-medium">Modifier</a>
+    <form method="post" class="space-y-3 mt-2">
+      {% csrf_token %}
+      <input type="hidden" name="action" value="add_vehicle">
+      {% if vehicle_form.non_field_errors %}
+        <div class="text-sm text-red-600">{{ vehicle_form.non_field_errors|join:", " }}</div>
+      {% endif %}
+      <div>
+        <label class="block text-xs text-slate-500 mb-1">Plaque</label>
+        {{ vehicle_form.plaque }}
+        {% if vehicle_form.plaque.errors %}<p class="text-xs text-red-600 mt-1">{{ vehicle_form.plaque.errors|join:", " }}</p>{% endif %}
+      </div>
+      <div>
+        <label class="block text-xs text-slate-500 mb-1">Marque</label>
+        {{ vehicle_form.marque }}
+      </div>
+      <div>
+        <label class="block text-xs text-slate-500 mb-1">Modèle</label>
+        {{ vehicle_form.modele }}
+      </div>
+      <div>
+        <label class="block text-xs text-slate-500 mb-1">Couleur</label>
+        {{ vehicle_form.couleur }}
+      </div>
+      <button type="submit" class="inline-flex w-full justify-center px-4 py-2 rounded-lg bg-gradient-to-r from-brand-blue to-brand-green text-white text-sm font-medium hover:opacity-95">
+        Ajouter un véhicule
+      </button>
+    </form>
   </div>
 
   <!-- Historique -->
   <div class="card lg:col-span-3">
     <div class="flex items-center justify-between mb-4">
       <h2 class="text-lg font-semibold text-slate-900">Historique récent</h2>
-      <a href="#" class="text-sm text-brand-blue hover:underline">Voir tout</a>
+      <a href="{% url 'parking:history' %}" class="text-sm text-brand-blue hover:underline">Voir tout</a>
     </div>
 
     {% if history %}
@@ -155,8 +183,8 @@
           <tbody class="divide-y divide-slate-100">
             {% for h in history %}
               <tr>
-                <td class="py-2.5">{{ h.date }}</td>
-                <td class="py-2.5">{{ h.spot }}</td>
+                <td class="py-2.5">{{ h.date|date:"d/m/Y H:i" }}</td>
+                <td class="py-2.5">Place {{ h.spot }}</td>
                 <td class="py-2.5">{{ h.duration }}</td>
                 <td class="py-2.5">
                   <span class="text-xs px-2 py-1 rounded-full bg-slate-100 text-slate-700">{{ h.status }}</span>
