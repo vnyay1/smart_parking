@@ -1,0 +1,172 @@
+{% extends "base_dashboard.html" %}
+{% block title %}Tableau de bord — Smart Parking AI{% endblock %}
+{% block nav_dashboard %}active{% endblock %}
+
+{% block content %}
+<!-- Header -->
+<div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+  <div>
+    <h1 class="text-2xl lg:text-3xl font-bold text-slate-900">Tableau de bord</h1>
+    <p class="text-slate-500 mt-1">Bienvenue, {{ user.first_name|default:user.username }} 👋</p>
+  </div>
+  <a href="{% url 'parking:reservation_new' %}"
+     class="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-white font-semibold
+            bg-gradient-to-r from-brand-blue to-brand-green hover:opacity-95 shadow-md transition">
+    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+    Nouvelle réservation
+  </a>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+  <!-- Réservation active -->
+  <div class="card lg:col-span-2">
+    <div class="flex items-center justify-between mb-4">
+      <h2 class="text-lg font-semibold text-slate-900">Réservation active</h2>
+      <span class="text-xs px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 font-medium">En cours</span>
+    </div>
+
+    {% if active_reservation %}
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-5">
+        <div>
+          <p class="text-xs text-slate-500 uppercase">Place</p>
+          <p class="font-semibold text-slate-900 mt-1">{{ active_reservation.spot }}</p>
+        </div>
+        <div>
+          <p class="text-xs text-slate-500 uppercase">Début</p>
+          <p class="font-semibold text-slate-900 mt-1">{{ active_reservation.start_time }}</p>
+        </div>
+        <div>
+          <p class="text-xs text-slate-500 uppercase">Fin</p>
+          <p class="font-semibold text-slate-900 mt-1">{{ active_reservation.end_time }}</p>
+        </div>
+        <div>
+          <p class="text-xs text-slate-500 uppercase">Statut</p>
+          <p class="font-semibold text-emerald-600 mt-1">{{ active_reservation.status }}</p>
+        </div>
+      </div>
+      <div class="flex gap-3">
+        <a href="#" class="px-4 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-sm font-medium">Voir</a>
+        <form method="post" action="#" onsubmit="return confirm('Annuler cette réservation ?');">
+          {% csrf_token %}
+          <button class="px-4 py-2 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 text-sm font-medium">Annuler</button>
+        </form>
+      </div>
+    {% else %}
+      <div class="text-center py-8">
+        <div class="w-14 h-14 mx-auto rounded-full bg-slate-100 flex items-center justify-center mb-3">
+          <svg class="w-7 h-7 text-slate-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 17v-2a4 4 0 014-4h6"/></svg>
+        </div>
+        <p class="text-slate-500 mb-4">Aucune réservation active pour l'instant.</p>
+        <a href="{% url 'parking:reservation_new' %}"
+           class="inline-flex px-5 py-2.5 rounded-xl text-white font-semibold bg-gradient-to-r from-brand-blue to-brand-green hover:opacity-95 transition">
+          Réserver maintenant
+        </a>
+      </div>
+    {% endif %}
+  </div>
+
+  <!-- Disponibilité -->
+  <div class="card">
+    <h2 class="text-lg font-semibold text-slate-900 mb-4">Disponibilité du parking</h2>
+    <div class="flex items-end justify-between mb-4">
+      <div>
+        <p class="text-4xl font-bold text-brand-green">{{ free_spots|default:"—" }}</p>
+        <p class="text-sm text-slate-500">places libres</p>
+      </div>
+      <div class="text-right">
+        <p class="text-2xl font-semibold text-slate-700">{{ taken_spots|default:"—" }}</p>
+        <p class="text-sm text-slate-500">occupées</p>
+      </div>
+    </div>
+    <div class="h-2 bg-slate-100 rounded-full overflow-hidden">
+      <meter min="0" max="100" value="{{ occupancy_percent|default:0 }}" class="w-full h-2 block"></meter>
+    </div>
+    <a href="{% url 'parking:availability' %}" class="inline-block mt-4 text-sm font-medium text-brand-blue hover:underline">Voir le détail →</a>
+  </div>
+
+  <!-- Prochaines réservations -->
+  <div class="card lg:col-span-2">
+    <div class="flex items-center justify-between mb-4">
+      <h2 class="text-lg font-semibold text-slate-900">Mes prochaines réservations</h2>
+      <a href="{% url 'parking:reservations' %}" class="text-sm text-brand-blue hover:underline">Tout voir</a>
+    </div>
+
+    {% if upcoming_reservations %}
+      <ul class="divide-y divide-slate-100">
+        {% for r in upcoming_reservations %}
+          <li class="py-3 flex items-center justify-between gap-4">
+            <div>
+              <p class="font-medium text-slate-900">Place {{ r.spot }}</p>
+              <p class="text-xs text-slate-500">{{ r.start_time }} → {{ r.end_time }}</p>
+            </div>
+            <div class="flex items-center gap-3">
+              <span class="text-xs px-2 py-1 rounded-full bg-blue-50 text-blue-700">{{ r.status }}</span>
+              <a href="#" class="text-sm text-slate-600 hover:text-slate-900">Détails</a>
+              <a href="#" class="text-sm text-red-600 hover:text-red-700">Annuler</a>
+            </div>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p class="text-sm text-slate-500 py-6 text-center">Aucune réservation à venir.</p>
+    {% endif %}
+  </div>
+
+  <!-- Profil véhicule -->
+  <div class="card">
+    <h2 class="text-lg font-semibold text-slate-900 mb-4">Mon profil véhicule</h2>
+    {% if vehicles %}
+      <ul class="space-y-2 mb-4">
+        {% for v in vehicles %}
+          <li class="flex items-center gap-3 px-3 py-2 rounded-lg bg-slate-50">
+            <div class="w-9 h-9 rounded-md bg-white border border-slate-200 flex items-center justify-center font-bold text-slate-700">🚗</div>
+            <span class="font-mono font-semibold text-slate-900">{{ v.plate }}</span>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p class="text-sm text-slate-500 mb-4">Aucune plaque enregistrée.</p>
+    {% endif %}
+    <a href="{% url 'parking:profile' %}" class="inline-flex w-full justify-center px-4 py-2 rounded-lg border border-slate-200 hover:bg-slate-50 text-sm font-medium">Modifier</a>
+  </div>
+
+  <!-- Historique -->
+  <div class="card lg:col-span-3">
+    <div class="flex items-center justify-between mb-4">
+      <h2 class="text-lg font-semibold text-slate-900">Historique récent</h2>
+      <a href="{% url 'parking:history' %}" class="text-sm text-brand-blue hover:underline">Voir tout</a>
+    </div>
+
+    {% if history %}
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead class="text-left text-slate-500 border-b border-slate-100">
+            <tr>
+              <th class="py-2 font-medium">Date</th>
+              <th class="py-2 font-medium">Place</th>
+              <th class="py-2 font-medium">Durée</th>
+              <th class="py-2 font-medium">Statut</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-100">
+            {% for h in history %}
+              <tr>
+                <td class="py-2.5">{{ h.date }}</td>
+                <td class="py-2.5">{{ h.spot }}</td>
+                <td class="py-2.5">{{ h.duration }}</td>
+                <td class="py-2.5">
+                  <span class="text-xs px-2 py-1 rounded-full bg-slate-100 text-slate-700">{{ h.status }}</span>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <p class="text-sm text-slate-500 py-6 text-center">Aucune donnée pour l'instant.</p>
+    {% endif %}
+  </div>
+
+</div>
+{% endblock %}

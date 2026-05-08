@@ -1,0 +1,55 @@
+{% extends "base_dashboard.html" %}
+{% block title %}Historique — Smart Parking AI{% endblock %}
+{% block nav_history %}active{% endblock %}
+
+{% block content %}
+<div class="mb-8">
+  <h1 class="text-2xl lg:text-3xl font-bold text-slate-900">Historique</h1>
+  <p class="text-slate-500 mt-1">Vos réservations terminées ou annulées.</p>
+</div>
+
+<div class="card">
+  {% if history %}
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm">
+        <thead class="text-left text-slate-500 border-b border-slate-100">
+          <tr>
+            <th class="py-3 font-medium">Date</th>
+            <th class="py-3 font-medium">Place</th>
+            <th class="py-3 font-medium">Durée</th>
+            <th class="py-3 font-medium">Statut final</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100">
+          {% for h in history %}
+            <tr>
+              <td class="py-3">{{ h.date }}</td>
+              <td class="py-3 font-medium text-slate-900">Place {{ h.spot }}</td>
+              <td class="py-3">{{ h.duration }}</td>
+              <td class="py-3">
+                <span class="text-xs px-2 py-1 rounded-full
+                  {% if h.status == 'completed' %}bg-emerald-50 text-emerald-700
+                  {% else %}bg-red-50 text-red-700{% endif %}">{{ h.status_label }}</span>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    {% if is_paginated %}
+      <div class="flex justify-end gap-2 mt-6">
+        {% if page_obj.has_previous %}
+          <a href="?page={{ page_obj.previous_page_number }}" class="px-3 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 text-sm">Précédent</a>
+        {% endif %}
+        <span class="px-3 py-1.5 text-sm text-slate-500">Page {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
+        {% if page_obj.has_next %}
+          <a href="?page={{ page_obj.next_page_number }}" class="px-3 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 text-sm">Suivant</a>
+        {% endif %}
+      </div>
+    {% endif %}
+  {% else %}
+    <p class="text-center text-slate-500 py-12">Aucune donnée pour l'instant.</p>
+  {% endif %}
+</div>
+{% endblock %}
