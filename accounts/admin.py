@@ -2,6 +2,13 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from .models import CustomUser, Vehicule
 
+
+class VehiculeInline(admin.TabularInline):
+    """Affiche les véhicules directement dans la fiche utilisateur."""
+    model  = Vehicule
+    extra  = 0
+    fields = ['plaque', 'marque', 'modele', 'couleur']
+    
 @admin.register(CustomUser)
 class CustomUserAdmin(UserAdmin):
     list_display  = ['username', 'email', 'first_name', 'last_name', 'is_staff', 'is_active', 'date_joined']

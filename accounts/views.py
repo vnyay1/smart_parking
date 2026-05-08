@@ -1,8 +1,10 @@
-from django.shortcuts import render, redirect
-from django.contrib.auth import login, logout, authenticate
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from .forms import InscriptionForm, ConnexionForm
+from django.views.decorators.http import require_POST
+from .forms import InscriptionForm, ConnexionForm, VehiculeForm
+from .models import Vehicule
 
 def inscription(request):
     if request.user.is_authenticated:
@@ -49,3 +51,78 @@ def deconnexion(request):
     logout(request)
     messages.info(request, "Vous êtes déconnecté.")
     return redirect('accounts:connexion')
+
+# ── Véhicules ─────────────────────────────────────────────────────
+
+@login_required
+def liste_vehicules(request):
+    """Liste tous les véhicules de l'utilisateur connecté."""
+    vehicules = Vehicule.objects.filter(proprietaire=request.user)
+    return render(request, 'accounts/vehicules.html', {'vehicules': vehicules})
+
+
+@login_required
+def ajouter_vehicule(request):
+    """Ajoute un nouveau véhicule au compte de l'utilisateur."""
+    if request.method == 'POST':
+        form = VehiculeForm(request.POST)
+        if form.is_valid():
+            vehicule = form.save(commit=False)
+            vehicule.proprietaire = request.user   # lier au user connecté
+            vehicule.save()
+            messages.success(request, f"Véhicule {vehicule.plaque} ajouté avec succès.")
+            return redirect('accounts:liste_vehicules')
+        messages.error(request, "Veuillez corriger les erreurs.")
+    else:
+        form = VehiculeForm()
+
+    return render(request, 'accounts/vehicule_form.html', {
+        'form':  form,
+        'titre': 'Ajouter un véhicule',
+    })
+
+
+@login_required
+def modifier_vehicule(request, pk):
+    """Modifie un véhicule appartenant à l'utilisateur connecté."""
+    vehicule = get_object_or_404(Vehicule, pk=pk, proprietaire=request.user)
+
+    if request.method == 'POST':
+        form = VehiculeForm(request.POST, instance=vehicule)
+        if form.is_valid():
+            form.save()
+            messages.success(request, f"Véhicule {vehicule.plaque} mis à jour.")
+            return redirect('accounts:liste_vehicules')
+        messages.error(request, "Veuillez corriger les erreurs.")
+    else:
+        form = VehiculeForm(instance=vehicule)
+
+    return render(request, 'accounts/vehicule_form.html', {
+        'form':     form,
+        'vehicule': vehicule,
+        'titre':    'Modifier le véhicule',
+    })
+
+
+@login_required
+@require_POST
+def supprimer_vehicule(request, pk):
+    """Supprime un véhicule — bloqué si une réservation active existe."""
+    vehicule = get_object_or_404(Vehicule, pk=pk, proprietaire=request.user)
+
+    # Vérifier qu'aucune réservation active ne dépend de ce véhicule
+    reservations_actives = vehicule.reservations.filter(
+        statut__in=['en_attente', 'active']
+    )
+    if reservations_actives.exists():
+        messages.error(
+            request,
+            f"Impossible de supprimer {vehicule.plaque} : "
+            f"{reservations_actives.count()} réservation(s) active(s) en cours."
+        )
+        return redirect('accounts:liste_vehicules')
+
+    plaque = vehicule.plaque
+    vehicule.delete()
+    messages.success(request, f"Véhicule {plaque} supprimé.")
+    return redirect('accounts:liste_vehicules')
