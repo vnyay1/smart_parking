@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Smart Parking AI{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .brand-gradient {
+            background: linear-gradient(90deg, #2563eb 0%, #10b981 100%);
+        }
+        .brand-gradient-text {
+            background: linear-gradient(90deg, #2563eb 0%, #10b981 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        .btn-primary {
+            background: linear-gradient(90deg, #2563eb 0%, #10b981 100%);
+        }
+        .btn-primary:hover {
+            opacity: 0.95;
+        }
+        .input-field:focus {
+            outline: none;
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 antialiased">
+    {% if messages %}
+        <div class="max-w-4xl mx-auto px-4 pt-4 space-y-2">
+            {% for message in messages %}
+                <div class="rounded-lg border px-4 py-3 text-sm
+                    {% if message.tags == 'success' %}bg-emerald-50 border-emerald-200 text-emerald-700
+                    {% elif message.tags == 'error' %}bg-red-50 border-red-200 text-red-700
+                    {% elif message.tags == 'warning' %}bg-amber-50 border-amber-200 text-amber-700
+                    {% else %}bg-blue-50 border-blue-200 text-blue-700{% endif %}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+    {% block content %}{% endblock %}
+</body>
+</html>

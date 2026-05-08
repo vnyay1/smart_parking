@@ -9,7 +9,7 @@
     <h1 class="text-2xl lg:text-3xl font-bold text-slate-900">Tableau de bord</h1>
     <p class="text-slate-500 mt-1">Bienvenue, {{ user.first_name|default:user.username }} 👋</p>
   </div>
-  <a href="{% url 'parking:reservation_new' %}"
+  <a href="{% url 'parking:creer_reservation' %}"
      class="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-white font-semibold
             bg-gradient-to-r from-brand-blue to-brand-green hover:opacity-95 shadow-md transition">
     <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
@@ -58,7 +58,7 @@
           <svg class="w-7 h-7 text-slate-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 17v-2a4 4 0 014-4h6"/></svg>
         </div>
         <p class="text-slate-500 mb-4">Aucune réservation active pour l'instant.</p>
-        <a href="{% url 'parking:reservation_new' %}"
+        <a href="{% url 'parking:creer_reservation' %}"
            class="inline-flex px-5 py-2.5 rounded-xl text-white font-semibold bg-gradient-to-r from-brand-blue to-brand-green hover:opacity-95 transition">
           Réserver maintenant
         </a>
@@ -82,14 +82,14 @@
     <div class="h-2 bg-slate-100 rounded-full overflow-hidden">
       <meter min="0" max="100" value="{{ occupancy_percent|default:0 }}" class="w-full h-2 block"></meter>
     </div>
-    <a href="{% url 'parking:availability' %}" class="inline-block mt-4 text-sm font-medium text-brand-blue hover:underline">Voir le détail →</a>
+    <a href="#" class="inline-block mt-4 text-sm font-medium text-brand-blue hover:underline">Voir le détail →</a>
   </div>
 
   <!-- Prochaines réservations -->
   <div class="card lg:col-span-2">
     <div class="flex items-center justify-between mb-4">
       <h2 class="text-lg font-semibold text-slate-900">Mes prochaines réservations</h2>
-      <a href="{% url 'parking:reservations' %}" class="text-sm text-brand-blue hover:underline">Tout voir</a>
+      <a href="{% url 'parking:mes_reservations' %}" class="text-sm text-brand-blue hover:underline">Tout voir</a>
     </div>
 
     {% if upcoming_reservations %}
@@ -97,13 +97,16 @@
         {% for r in upcoming_reservations %}
           <li class="py-3 flex items-center justify-between gap-4">
             <div>
-              <p class="font-medium text-slate-900">Place {{ r.spot }}</p>
-              <p class="text-xs text-slate-500">{{ r.start_time }} → {{ r.end_time }}</p>
+              <p class="font-medium text-slate-900">Place {{ r.place.numero }}</p>
+              <p class="text-xs text-slate-500">{{ r.heure_debut }} → {{ r.heure_fin }}</p>
             </div>
             <div class="flex items-center gap-3">
-              <span class="text-xs px-2 py-1 rounded-full bg-blue-50 text-blue-700">{{ r.status }}</span>
-              <a href="#" class="text-sm text-slate-600 hover:text-slate-900">Détails</a>
-              <a href="#" class="text-sm text-red-600 hover:text-red-700">Annuler</a>
+              <span class="text-xs px-2 py-1 rounded-full bg-blue-50 text-blue-700">{{ r.get_statut_display }}</span>
+              <a href="{% url 'parking:detail_reservation' r.pk %}" class="text-sm text-slate-600 hover:text-slate-900">Détails</a>
+              <form method="post" action="{% url 'parking:annuler_reservation' r.pk %}" class="inline" onsubmit="return confirm('Annuler cette réservation ?');">
+                {% csrf_token %}
+                <button type="submit" class="text-sm text-red-600 hover:text-red-700">Annuler</button>
+              </form>
             </div>
           </li>
         {% endfor %}
@@ -128,14 +131,14 @@
     {% else %}
       <p class="text-sm text-slate-500 mb-4">Aucune plaque enregistrée.</p>
     {% endif %}
-    <a href="{% url 'parking:profile' %}" class="inline-flex w-full justify-center px-4 py-2 rounded-lg border border-slate-200 hover:bg-slate-50 text-sm font-medium">Modifier</a>
+    <a href="#" class="inline-flex w-full justify-center px-4 py-2 rounded-lg border border-slate-200 hover:bg-slate-50 text-sm font-medium">Modifier</a>
   </div>
 
   <!-- Historique -->
   <div class="card lg:col-span-3">
     <div class="flex items-center justify-between mb-4">
       <h2 class="text-lg font-semibold text-slate-900">Historique récent</h2>
-      <a href="{% url 'parking:history' %}" class="text-sm text-brand-blue hover:underline">Voir tout</a>
+      <a href="#" class="text-sm text-brand-blue hover:underline">Voir tout</a>
     </div>
 
     {% if history %}

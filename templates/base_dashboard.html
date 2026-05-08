@@ -75,11 +75,11 @@
         <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l9-9 9 9M5 10v10h14V10"/></svg>
         Tableau de bord
       </a>
-      <a href="{% url 'parking:reservation_new' %}" class="nav-link {% block nav_new %}{% endblock %}">
+      <a href="{% url 'parking:creer_reservation' %}" class="nav-link {% block nav_new %}{% endblock %}">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
         Nouvelle réservation
       </a>
-      <a href="{% url 'parking:reservations' %}" class="nav-link {% block nav_reservations %}{% endblock %}">
+      <a href="{% url 'parking:mes_reservations' %}" class="nav-link {% block nav_reservations %}{% endblock %}">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3M3 11h18M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
         Mes réservations
       </a>

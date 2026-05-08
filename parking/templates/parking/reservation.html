@@ -10,40 +10,46 @@
 
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
   <!-- Formulaire -->
-  <form method="post" action="{% url 'parking:reservation_new' %}" class="card lg:col-span-2 space-y-5">
+  <form method="post" action="{% url 'parking:creer_reservation' %}" class="card lg:col-span-2 space-y-5">
     {% csrf_token %}
 
-    <div>
-      <label class="block text-sm font-medium text-slate-700 mb-1">Zone</label>
-      <select name="zone" class="w-full px-4 py-2.5 rounded-lg border border-slate-200 focus:ring-2 focus:ring-brand-blue/30 focus:border-brand-blue outline-none">
-        <option value="">-- Choisir une zone --</option>
-        <option value="A">Zone A</option>
-        <option value="B">Zone B</option>
-        <option value="C">Zone C</option>
-      </select>
-    </div>
+    {% if form.non_field_errors %}
+      <div class="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+        {{ form.non_field_errors }}
+      </div>
+    {% endif %}
 
     <div>
-      <label class="block text-sm font-medium text-slate-700 mb-1">Place</label>
-      <select name="spot" class="w-full px-4 py-2.5 rounded-lg border border-slate-200 focus:ring-2 focus:ring-brand-blue/30 focus:border-brand-blue outline-none">
-        <option value="">-- Sélectionner une place disponible --</option>
-        {% for s in available_spots %}
-          <option value="{{ s.id }}">Place {{ s.label }}</option>
-        {% endfor %}
-      </select>
+      <label for="{{ form.place.id_for_label }}" class="block text-sm font-medium text-slate-700 mb-1">Place</label>
+      {{ form.place }}
+      {% if form.place.errors %}
+        <p class="mt-1 text-sm text-red-600">{{ form.place.errors|join:", " }}</p>
+      {% endif %}
     </div>
 
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
       <div>
-        <label class="block text-sm font-medium text-slate-700 mb-1">Date & heure de début</label>
-        <input type="datetime-local" name="start_time" required
-               class="w-full px-4 py-2.5 rounded-lg border border-slate-200 focus:ring-2 focus:ring-brand-blue/30 focus:border-brand-blue outline-none">
+        <label for="{{ form.heure_debut.id_for_label }}" class="block text-sm font-medium text-slate-700 mb-1">Date et heure de début</label>
+        {{ form.heure_debut }}
+        {% if form.heure_debut.errors %}
+          <p class="mt-1 text-sm text-red-600">{{ form.heure_debut.errors|join:", " }}</p>
+        {% endif %}
       </div>
       <div>
-        <label class="block text-sm font-medium text-slate-700 mb-1">Date & heure de fin</label>
-        <input type="datetime-local" name="end_time" required
-               class="w-full px-4 py-2.5 rounded-lg border border-slate-200 focus:ring-2 focus:ring-brand-blue/30 focus:border-brand-blue outline-none">
+        <label for="{{ form.heure_fin.id_for_label }}" class="block text-sm font-medium text-slate-700 mb-1">Date et heure de fin</label>
+        {{ form.heure_fin }}
+        {% if form.heure_fin.errors %}
+          <p class="mt-1 text-sm text-red-600">{{ form.heure_fin.errors|join:", " }}</p>
+        {% endif %}
       </div>
+    </div>
+
+    <div>
+      <label for="{{ form.vehicule.id_for_label }}" class="block text-sm font-medium text-slate-700 mb-1">Véhicule</label>
+      {{ form.vehicule }}
+      {% if form.vehicule.errors %}
+        <p class="mt-1 text-sm text-red-600">{{ form.vehicule.errors|join:", " }}</p>
+      {% endif %}
     </div>
 
     <div class="flex gap-3 pt-2">

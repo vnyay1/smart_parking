@@ -10,8 +10,20 @@ class ReservationForm(forms.ModelForm):
         model  = Reservation
         fields = ['place', 'vehicule', 'heure_debut', 'heure_fin']
         widgets = {
-            'heure_debut': forms.DateTimeInput(attrs={'type': 'datetime-local'}, format='%Y-%m-%dT%H:%M'),
-            'heure_fin':   forms.DateTimeInput(attrs={'type': 'datetime-local'}, format='%Y-%m-%dT%H:%M'),
+            'heure_debut': forms.DateTimeInput(
+                attrs={
+                    'type': 'datetime-local',
+                    'class': 'w-full px-4 py-2.5 rounded-lg border border-slate-200 focus:ring-2 focus:ring-brand-blue/30 focus:border-brand-blue outline-none'
+                },
+                format='%Y-%m-%dT%H:%M'
+            ),
+            'heure_fin': forms.DateTimeInput(
+                attrs={
+                    'type': 'datetime-local',
+                    'class': 'w-full px-4 py-2.5 rounded-lg border border-slate-200 focus:ring-2 focus:ring-brand-blue/30 focus:border-brand-blue outline-none'
+                },
+                format='%Y-%m-%dT%H:%M'
+            ),
         }
 
     def __init__(self, *args, **kwargs):
@@ -23,6 +35,9 @@ class ReservationForm(forms.ModelForm):
 
         # N'afficher que les véhicules de l'utilisateur connecté
         self.fields['vehicule'].queryset = Vehicule.objects.filter(proprietaire=self.user)
+        select_css = 'w-full px-4 py-2.5 rounded-lg border border-slate-200 focus:ring-2 focus:ring-brand-blue/30 focus:border-brand-blue outline-none'
+        self.fields['place'].widget.attrs.update({'class': select_css})
+        self.fields['vehicule'].widget.attrs.update({'class': select_css})
 
     def clean(self):
         cleaned = super().clean()

@@ -41,8 +41,8 @@
         <li><a href="#contact" class="hover:text-blue-700 transition">Contact</a></li>
       </ul>
       <div class="flex items-center gap-3">
-        <a href="#" class="hidden sm:inline-block px-4 py-2 text-sm font-medium text-gray-700 hover:text-blue-700 transition">Login</a>
-        <a href="#" class="px-5 py-2 text-sm font-semibold text-white bg-blue-700 rounded-xl hover:bg-blue-800 shadow-lg shadow-blue-200 transition">Register</a>
+        <a href="{% url 'accounts:connexion' %}" class="hidden sm:inline-block px-4 py-2 text-sm font-medium text-gray-700 hover:text-blue-700 transition">Login</a>
+        <a href="{% url 'accounts:inscription' %}" class="px-5 py-2 text-sm font-semibold text-white bg-blue-700 rounded-xl hover:bg-blue-800 shadow-lg shadow-blue-200 transition">Register</a>
       </div>
     </nav>
   </header>
@@ -61,7 +61,7 @@
         Reserve your parking space in advance and access it instantly with AI-powered license plate verification.
       </p>
       <div class="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
-        <a href="#" class="px-8 py-3.5 rounded-xl bg-white text-blue-700 font-semibold shadow-lg hover:shadow-2xl hover:-translate-y-0.5 transition">Reserve a Spot</a>
+        <a href="{% url 'parking:creer_reservation' %}" class="px-8 py-3.5 rounded-xl bg-white text-blue-700 font-semibold shadow-lg hover:shadow-2xl hover:-translate-y-0.5 transition">Reserve a Spot</a>
         <a href="#how" class="px-8 py-3.5 rounded-xl bg-white/10 border border-white/30 text-white font-semibold backdrop-blur hover:bg-white/20 transition">Learn More</a>
       </div>
       <div class="mt-16 grid grid-cols-3 gap-4 max-w-2xl mx-auto">
@@ -174,8 +174,8 @@
           <h2 class="text-3xl md:text-4xl font-bold tracking-tight">Start using Smart Parking today<br/>and save time every day.</h2>
           <p class="mt-4 text-white/85 max-w-xl mx-auto">Join hundreds of drivers who already park smarter with AI.</p>
           <div class="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
-            <a href="#" class="px-8 py-3.5 rounded-xl bg-white text-blue-700 font-semibold shadow-lg hover:shadow-2xl hover:-translate-y-0.5 transition">Get Started</a>
-            <a href="#" class="px-8 py-3.5 rounded-xl bg-white/10 border border-white/30 text-white font-semibold backdrop-blur hover:bg-white/20 transition">Sign Up</a>
+            <a href="{% url 'accounts:connexion' %}" class="px-8 py-3.5 rounded-xl bg-white text-blue-700 font-semibold shadow-lg hover:shadow-2xl hover:-translate-y-0.5 transition">Get Started</a>
+            <a href="{% url 'accounts:inscription' %}" class="px-8 py-3.5 rounded-xl bg-white/10 border border-white/30 text-white font-semibold backdrop-blur hover:bg-white/20 transition">Sign Up</a>
           </div>
         </div>
       </div>
