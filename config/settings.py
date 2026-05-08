@@ -121,6 +121,9 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+LOGIN_URL = 'accounts:connexion'      # redirige si @login_required déclenche
+LOGIN_REDIRECT_URL = 'parking:dashboard'
+LOGOUT_REDIRECT_URL = 'accounts:connexion'
 
 # Internationalization
 # https://docs.djangoproject.com/en/6.0/topics/i18n/
