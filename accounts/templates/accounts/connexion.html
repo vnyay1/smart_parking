@@ -39,14 +39,6 @@
                     {% if form.password.errors %}<p class="mt-1 text-xs text-red-600">{{ form.password.errors|join:" " }}</p>{% endif %}
                 </div>
 
-                <div class="flex items-center justify-between text-sm">
-                    <label class="flex items-center space-x-2 text-gray-600 cursor-pointer">
-                        <input type="checkbox" name="remember_me" class="rounded border-gray-300 text-blue-600 focus:ring-blue-500" />
-                        <span>Se souvenir de moi</span>
-                    </label>
-                    <a href="#" class="text-blue-600 hover:text-blue-700 font-medium">Mot de passe oublié ?</a>
-                </div>
-
                 <button type="submit" class="btn-primary w-full py-3 rounded-lg text-white font-semibold text-base">
                     Se connecter
                 </button>

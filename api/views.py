@@ -10,12 +10,30 @@ from vision.reconnaissance import SystemeReconnaissance
 
 # Instance globale — évite de recharger EasyOCR à chaque requête
 _systeme = None
+ARRIVEE_ANTICIPATION_MINUTES = 60
+SORTIE_GRACE_MINUTES = 15
 
 def get_systeme():
     global _systeme
     if _systeme is None:
         _systeme = SystemeReconnaissance()
     return _systeme
+
+
+def _trouver_reservation_valide(plaque_lue: str, reservations):
+    for reservation in reservations:
+        plaque_ref = reservation.vehicule.plaque
+
+        # Priorité 1 : comparaison complète Levenshtein
+        if SystemeReconnaissance.comparer_plaques(plaque_lue, plaque_ref, tolerance=1):
+            return reservation
+
+        # Priorité 2 : fallback chiffres si la lettre est potentiellement mal lue
+        if '?' in plaque_lue or 'ا' in plaque_lue:
+            if SystemeReconnaissance.comparer_numeros_seulement(plaque_lue, plaque_ref):
+                return reservation
+
+    return None
 
 
 @api_view(['POST'])
@@ -42,56 +60,66 @@ def detecter_plaque(request):
             'autorise':  False,
             'message':   'Plaque illisible ou non détectée.',
             'confiance': 0.0,
+            'evenement': 'refuse',
         })
 
-    # 2. Chercher une réservation active dans la fenêtre ±15 min
-    now     = timezone.now()
-    fenetre = timedelta(minutes=15)
+    # 2. Chercher des réservations compatibles
+    now = timezone.now()
+    fenetre_entree = timedelta(minutes=ARRIVEE_ANTICIPATION_MINUTES)
+    fenetre_sortie = timedelta(minutes=SORTIE_GRACE_MINUTES)
 
-    reservations = Reservation.objects.filter(
-        statut='en_attente',
-        heure_debut__gte=now - fenetre,
-        heure_debut__lte=now + fenetre,
+    reservations_entree = Reservation.objects.filter(
+        statut=Reservation.Statut.EN_ATTENTE,
+        heure_debut__lte=now + fenetre_entree,
+        heure_fin__gte=now,
+    ).select_related('vehicule', 'place', 'utilisateur')
+
+    reservations_sortie = Reservation.objects.filter(
+        statut=Reservation.Statut.ACTIVE,
+        heure_fin__gte=now - fenetre_sortie,
     ).select_related('vehicule', 'place')
 
-    # 3. Comparer avec tolérance Levenshtein
-    # Dans la vue detecter_plaque, remplacer la boucle de comparaison par :
-
-    reservation_valide = None
-
-    for r in reservations:
-        plaque_ref = r.vehicule.plaque
-
-        # Priorité 1 : comparaison complète Levenshtein ≤ 1
-        if SystemeReconnaissance.comparer_plaques(plaque_lue, plaque_ref, tolerance=1):
-            reservation_valide = r
-            print(f"[API] Match Levenshtein : {plaque_lue} ≈ {plaque_ref}")
-            break
-
-        # Priorité 2 : comparaison numérique (si lettre illisible = ا ou ?)
-        if '?' in plaque_lue or 'ا' in plaque_lue:
-            if SystemeReconnaissance.comparer_numeros_seulement(plaque_lue, plaque_ref):
-                reservation_valide = r
-                print(f"[API] Match numérique : {plaque_lue} ~ {plaque_ref}")
-                break
-    # 4. Journaliser + répondre
-    if reservation_valide:
-        reservation_valide.confirmer_entree()
+    # 3. Priorité sortie (si réservation déjà active), sinon entrée
+    reservation_sortie = _trouver_reservation_valide(plaque_lue, reservations_sortie)
+    if reservation_sortie:
+        reservation_sortie.terminer()
 
         JournalAcces.objects.create(
             plaque_detectee = plaque_lue,
-            reservation     = reservation_valide,
+            reservation     = reservation_sortie,
+            type_evenement  = JournalAcces.TypeEvenement.SORTIE,
+            score_confiance = confiance,
+        )
+
+        return Response({
+            'autorise':      True,
+            'evenement':     'sortie',
+            'plaque_lue':    plaque_lue,
+            'confiance':     round(confiance, 2),
+            'place':         reservation_sortie.place.numero,
+            'utilisateur':   reservation_sortie.utilisateur.get_full_name(),
+            'message':       f'Sortie autorisée — Place {reservation_sortie.place.numero}',
+        })
+
+    reservation_entree = _trouver_reservation_valide(plaque_lue, reservations_entree)
+    if reservation_entree:
+        reservation_entree.confirmer_entree()
+
+        JournalAcces.objects.create(
+            plaque_detectee = plaque_lue,
+            reservation     = reservation_entree,
             type_evenement  = JournalAcces.TypeEvenement.ENTREE,
             score_confiance = confiance,
         )
 
         return Response({
             'autorise':      True,
+            'evenement':     'entree',
             'plaque_lue':    plaque_lue,
             'confiance':     round(confiance, 2),
-            'place':         reservation_valide.place.numero,
-            'utilisateur':   reservation_valide.utilisateur.get_full_name(),
-            'message':       f'Accès autorisé — Place {reservation_valide.place.numero}',
+            'place':         reservation_entree.place.numero,
+            'utilisateur':   reservation_entree.utilisateur.get_full_name(),
+            'message':       f'Accès autorisé — Place {reservation_entree.place.numero}',
         })
 
     # Accès refusé
@@ -103,9 +131,10 @@ def detecter_plaque(request):
 
     return Response({
         'autorise':   False,
+        'evenement':  'refuse',
         'plaque_lue': plaque_lue,
         'confiance':  round(confiance, 2),
-        'message':    'Aucune réservation valide pour cette plaque.',
+        'message':    'Aucune reservation valide pour cette plaque.',
     })
 
 
