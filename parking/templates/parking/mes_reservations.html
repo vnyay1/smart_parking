@@ -22,6 +22,7 @@
     <option value="active" {% if selected_status == 'active' %}selected{% endif %}>En cours</option>
     <option value="upcoming" {% if selected_status == 'upcoming' %}selected{% endif %}>À venir</option>
     <option value="cancelled" {% if selected_status == 'cancelled' %}selected{% endif %}>Annulée</option>
+    <option value="completed" {% if selected_status == 'completed' %}selected{% endif %}>Terminée</option>
   </select>
   <input type="date" name="date" value="{{ selected_date }}" class="flex-1 px-4 py-2.5 rounded-lg border border-slate-200 outline-none focus:border-brand-blue">
   <button class="px-5 py-2.5 rounded-lg bg-slate-900 text-white font-medium hover:bg-slate-800">Filtrer</button>
@@ -51,11 +52,12 @@
                   {% if r.statut == 'active' %}bg-emerald-50 text-emerald-700
                   {% elif r.statut == 'en_attente' %}bg-blue-50 text-blue-700
                   {% elif r.statut == 'annulee' %}bg-slate-100 text-slate-700
+                  {% elif r.statut == 'terminee' %}bg-gray-50 text-gray-700
                   {% else %}bg-slate-100 text-slate-700{% endif %}">{{ r.get_statut_display }}</span>
               </td>
               <td class="py-3 text-right space-x-3">
                 <a href="{% url 'parking:detail_reservation' r.pk %}" class="text-slate-600 hover:text-slate-900">Détails</a>
-                {% if r.statut == 'active' or r.statut == 'en_attente' %}
+                {% if r.statut == 'en_attente' %}
                   <form method="post" action="{% url 'parking:annuler_reservation' r.pk %}" class="inline" onsubmit="return confirm('Annuler cette réservation ?');">
                     {% csrf_token %}
                     <button class="text-red-600 hover:text-red-700">Annuler</button>
