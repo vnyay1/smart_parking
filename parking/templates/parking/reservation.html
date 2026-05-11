@@ -57,7 +57,9 @@
               class="px-6 py-2.5 rounded-xl text-white font-semibold bg-gradient-to-r from-brand-blue to-brand-green hover:opacity-95 shadow-md transition">
         Confirmer la réservation
       </button>
+      {% if r.statut == 'en_attente' %}
       <a href="{% url 'parking:dashboard' %}" class="px-6 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 font-medium">Annuler</a>
+      {% endif %}
     </div>
   </form>
 

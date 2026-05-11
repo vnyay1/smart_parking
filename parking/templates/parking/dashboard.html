@@ -47,10 +47,6 @@
       </div>
       <div class="flex gap-3">
         <a href="{% url 'parking:detail_reservation' active_reservation.pk %}" class="px-4 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-sm font-medium">Voir</a>
-        <form method="post" action="{% url 'parking:annuler_reservation' active_reservation.pk %}" onsubmit="return confirm('Annuler cette réservation ?');">
-          {% csrf_token %}
-          <button class="px-4 py-2 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 text-sm font-medium">Annuler</button>
-        </form>
       </div>
     {% else %}
       <div class="text-center py-8">

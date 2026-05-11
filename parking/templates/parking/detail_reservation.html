@@ -40,7 +40,7 @@
     </div>
   </div>
 
-  {% if reservation.statut == 'en_attente' or reservation.statut == 'active' %}
+  {% if reservation.statut == 'en_attente'%}
     <div class="mt-6 flex justify-end">
       <form method="post" action="{% url 'parking:annuler_reservation' reservation.pk %}" onsubmit="return confirm('Annuler cette réservation ?');">
         {% csrf_token %}
